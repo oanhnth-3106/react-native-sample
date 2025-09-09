@@ -1,7 +1,7 @@
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import { store } from './src/store/store';
+import { store } from './src/stores/store';
 import AppNavigator from './src/navigation/AppNavigator';
 
 function App() {

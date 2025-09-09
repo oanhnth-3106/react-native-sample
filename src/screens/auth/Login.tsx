@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { login } from '../../store/auth';
+import { login } from '../../stores/auth';
 import { useDispatch } from 'react-redux';
 
 export default function Login() {
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 48,
-    backgroundColor: '#6200EE',
+    backgroundColor: '#281C9D',
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 8,

@@ -1,10 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSelector } from 'react-redux';
+import { RootState } from '../stores/store';
+import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from '../screens/auth/Login';
 import HomeScreen from '../screens/home/Home';
-import ProfileScreen from '../screens/home/Profile';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
-import { NavigationContainer } from '@react-navigation/native';
+import SettingScreen from '../screens/home/Setting';
+import BlogListScreen from '../screens/blog/BlogList';
+import BlogDetailScreen from '../screens/blog/BlogDetail';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -12,7 +14,9 @@ export type AuthStackParamList = {
 
 export type AppStackParamList = {
   Home: undefined;
-  Profile: undefined;
+  Setting: undefined;
+  BlogList: undefined;
+  BlogDetail: { id: string };
 };
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
@@ -33,8 +37,26 @@ const AuthStack = () => {
 const AppStack = () => {
   return (
     <App.Navigator>
-      <App.Screen name="Home" component={HomeScreen} />
-      <App.Screen name="Profile" component={ProfileScreen} />
+      <App.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="Setting"
+        component={SettingScreen}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="BlogList"
+        component={BlogListScreen}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="BlogDetail"
+        component={BlogDetailScreen}
+        options={{ headerShown: false }}
+      />
     </App.Navigator>
   );
 };
