@@ -1,30 +1,46 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { login } from '../../stores/auth';
-import { useDispatch } from 'react-redux';
-import { signIn } from '../../services/auth';
+import { signUp } from '../../services/auth';
 import { getAuthErrorMessage } from '../../utils/authErrorHandler';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AppNavigator';
 
-type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type RegisterScreenProps = NativeStackScreenProps<
+  AuthStackParamList,
+  'Register'
+>;
 
-export default function Login({ navigation }: LoginScreenProps) {
-  const dispatch = useDispatch();
-
+export default function Register({ navigation }: RegisterScreenProps) {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{
     email?: string;
     password?: string;
+    confirmPassword?: string;
     global?: string;
   }>({});
 
-  const handleLogin = async () => {
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      setFieldErrors({ confirmPassword: 'Passwords do not match.' });
+      return;
+    }
     try {
-      const userCredential = await signIn(userName, password);
-      dispatch(login({ userName: userCredential.user.email ?? '' }));
+      await signUp(userName, password);
+      Alert.alert(
+        'Registration Successful',
+        'You can now log in with your credentials.',
+        [{ text: 'OK', onPress: () => navigation.navigate('Login') }],
+      );
     } catch (err: any) {
       const msg = getAuthErrorMessage(err.code);
       setFieldErrors(msg);
@@ -55,24 +71,33 @@ export default function Login({ navigation }: LoginScreenProps) {
         {fieldErrors.password && (
           <Text style={styles.errorText}>{fieldErrors.password}</Text>
         )}
+        <Text style={styles.text}>Confirm Password</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          onChangeText={val => setConfirmPassword(val)}
+          defaultValue={confirmPassword}
+          secureTextEntry={true}
+        />
+        {fieldErrors.confirmPassword && (
+          <Text style={styles.errorText}>{fieldErrors.confirmPassword}</Text>
+        )}
         <Pressable
           style={({ pressed }) => [
             styles.button,
             pressed && styles.buttonPressed,
             (!userName || !password) && styles.buttonDisabled,
           ]}
-          disabled={!userName || !password}
-          onPress={() => handleLogin()}
+          disabled={!userName || !password || !confirmPassword}
+          onPress={() => handleRegister()}
         >
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Register</Text>
         </Pressable>
         {fieldErrors.global && (
           <Text style={styles.errorText}>{fieldErrors.global}</Text>
         )}
-        <Pressable onPress={() => navigation.navigate('Register')}>
-          <Text style={styles.registerText}>
-            Don't have an account? Register
-          </Text>
+        <Pressable onPress={() => navigation.navigate('Login')}>
+          <Text style={styles.loginText}>Already have an account? Login</Text>
         </Pressable>
       </View>
     </SafeAreaProvider>
@@ -130,7 +155,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 4,
   },
-  registerText: {
+  loginText: {
     marginTop: 16,
     fontSize: 14,
     color: '#0000EE',

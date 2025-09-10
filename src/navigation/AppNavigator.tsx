@@ -7,9 +7,11 @@ import HomeScreen from '../screens/home/Home';
 import SettingScreen from '../screens/home/Setting';
 import BlogListScreen from '../screens/blog/BlogList';
 import BlogDetailScreen from '../screens/blog/BlogDetail';
+import RegisterScreen from '../screens/auth/Register';
 
 export type AuthStackParamList = {
   Login: undefined;
+  Register: undefined;
 };
 
 export type AppStackParamList = {
@@ -28,6 +30,11 @@ const AuthStack = () => {
       <Auth.Screen
         name="Login"
         component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Auth.Screen
+        name="Register"
+        component={RegisterScreen}
         options={{ headerShown: false }}
       />
     </Auth.Navigator>

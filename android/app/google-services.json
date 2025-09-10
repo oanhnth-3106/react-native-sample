@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "688729444392",
+    "project_id": "nth-reactnativesample-cli-3106",
+    "storage_bucket": "nth-reactnativesample-cli-3106.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688729444392:android:ffa3a5131a0606b318e51d",
+        "android_client_info": {
+          "package_name": "com.taskmanagementsample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLuDD3akmkRM57MPHVfUdGq2F7-cSKk50"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
