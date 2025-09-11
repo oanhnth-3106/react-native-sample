@@ -8,6 +8,9 @@ import SettingScreen from '../screens/home/Setting';
 import BlogListScreen from '../screens/blog/BlogList';
 import BlogDetailScreen from '../screens/blog/BlogDetail';
 import RegisterScreen from '../screens/auth/Register';
+import TaskList from '../screens/task/TaskList';
+import CreateTask from '../screens/task/CreateTask';
+import DetailTask from '../screens/task/DetailTask';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -19,6 +22,9 @@ export type AppStackParamList = {
   Setting: undefined;
   BlogList: undefined;
   BlogDetail: { id: string };
+  TaskList: undefined;
+  CreateTask: undefined;
+  DetailTask: { id: string };
 };
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
@@ -62,6 +68,21 @@ const AppStack = () => {
       <App.Screen
         name="BlogDetail"
         component={BlogDetailScreen}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="TaskList"
+        component={TaskList}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="CreateTask"
+        component={CreateTask}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="DetailTask"
+        component={DetailTask}
         options={{ headerShown: false }}
       />
     </App.Navigator>
