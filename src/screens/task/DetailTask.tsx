@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
 import { getTaskDetail } from '../../services/task';
@@ -56,16 +56,16 @@ export default function DetailTask({
         {TASK_STATUSES[task.status as keyof typeof TASK_STATUSES]}
       </Text>
       <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button
-            color={'gray'}
-            title="Go Back"
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-        <View style={styles.button}>
-          <Button title="Edit Task" onPress={() => {}} />
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('TaskList')}>
+          <Text style={[styles.button, styles.cancelButton]}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('EditTask', { id: task.id as string })
+          }
+        >
+          <Text style={[styles.button, styles.editButton]}>Edit Task</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -98,7 +98,20 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   button: {
-    flex: 1,
-    marginHorizontal: 8,
+    padding: 12,
+    borderRadius: 12,
+    height: 48,
+    width: 160,
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    color: '#fff',
+  },
+  editButton: {
+    backgroundColor: '#007AFF',
+    color: '#fff',
   },
 });

@@ -11,6 +11,7 @@ import RegisterScreen from '../screens/auth/Register';
 import TaskList from '../screens/task/TaskList';
 import CreateTask from '../screens/task/CreateTask';
 import DetailTask from '../screens/task/DetailTask';
+import EditTask from '../screens/task/EditTask';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -25,6 +26,7 @@ export type AppStackParamList = {
   TaskList: undefined;
   CreateTask: undefined;
   DetailTask: { id: string };
+  EditTask: { id: string };
 };
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
@@ -83,6 +85,11 @@ const AppStack = () => {
       <App.Screen
         name="DetailTask"
         component={DetailTask}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="EditTask"
+        component={EditTask}
         options={{ headerShown: false }}
       />
     </App.Navigator>

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { AppStackParamList } from '../../navigation/AppNavigator';
 import { getBlogById } from '../../api/blog';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Blog } from '../../types/blog';
 import BellIcon from '../../../assets/svgs/bell.svg';
 import MailIcon from '../../../assets/svgs/mail.svg';
@@ -17,6 +17,7 @@ import SettingIcon from '../../../assets/svgs/setting.svg';
 import HomeIcon from '../../../assets/svgs/home.svg';
 import ArrowRightIcon from '../../../assets/svgs/arrow-right.svg';
 import { countAllStatuses } from '../../services/task';
+import { useFocusEffect } from '@react-navigation/native';
 
 type HomeScreenProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
@@ -65,10 +66,12 @@ export default function Home({ navigation }: HomeScreenProps) {
     },
   ];
 
-  useEffect(() => {
-    fetchBlogDetail();
-    fetchTaskCounts();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchBlogDetail();
+      fetchTaskCounts();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>

@@ -7,9 +7,15 @@ export const getListTask = async () => {
   try {
     const snapshot = await tasksCollection.get();
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } catch (error) {
-    console.error("Error fetching tasks: ", error);
-  }
+  } catch (error) {}
+};
+
+export const getTasksByStatus = async (status: string) => {
+  try {
+    const query = tasksCollection.where('status', '==', status);
+    const snapshot = await query.get();
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {}
 };
 
 export const addTask = (payload: Partial<Task>) => {
@@ -18,7 +24,7 @@ export const addTask = (payload: Partial<Task>) => {
     createdAt: firestore.FieldValue.serverTimestamp(),
     status: 'new',
   });
-}
+};
 
 export const getTaskDetail = async (id: string) => {
   try {
@@ -29,14 +35,13 @@ export const getTaskDetail = async (id: string) => {
       return null;
     }
   } catch (error) {
-    console.error("Error fetching task detail: ", error);
     return null;
   }
 };
 
 export const updateTask = (id: string, payload: Partial<Task>) => {
   return tasksCollection.doc(id).update(payload);
-}
+};
 
 export const countAllStatuses = async (statuses: string[]) => {
   const results: Record<string, number> = {};
@@ -48,4 +53,4 @@ export const countAllStatuses = async (statuses: string[]) => {
   }
 
   return results;
-}
+};

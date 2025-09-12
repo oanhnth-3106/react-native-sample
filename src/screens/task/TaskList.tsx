@@ -8,11 +8,12 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
-import { useEffect, useState } from 'react';
-import { getListTask } from '../../services/task';
+import { useCallback, useState } from 'react';
+import { getListTask, getTasksByStatus } from '../../services/task';
 import { Task } from '../../types/task';
 import PathIcon from '../../../assets/svgs/path.svg';
 import { TASK_STATUSES } from '../../commons/task';
+import { useFocusEffect } from '@react-navigation/native';
 
 type TaskListScreenProps = NativeStackScreenProps<
   AppStackParamList,
@@ -21,11 +22,29 @@ type TaskListScreenProps = NativeStackScreenProps<
 
 export default function TaskList({ navigation }: TaskListScreenProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [status, setStatus] = useState('all');
+
+  const STATUS_OPTIONS = [['all', 'All'], ...Object.entries(TASK_STATUSES)];
+
+  const statusStyleMap: { [key: string]: object } = {
+    all: styles.all,
+    new: styles.new,
+    in_progress: styles.in_progress,
+    pending: styles.pending,
+    completed: styles.completed,
+  };
 
   const fetchTasks = async () => {
     try {
       const data = await getListTask();
-      console.log(data);
+      setTasks(data as Task[]);
+    } catch (error) {}
+  };
+
+  const fetchTasksByStatus = async (value: string) => {
+    try {
+      const data =
+        value === 'all' ? await getListTask() : await getTasksByStatus(value);
       setTasks(data as Task[]);
     } catch (error) {}
   };
@@ -37,9 +56,11 @@ export default function TaskList({ navigation }: TaskListScreenProps) {
     return due.setHours(0, 0, 0, 0) < now.setHours(0, 0, 0, 0);
   };
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchTasks();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
@@ -54,6 +75,31 @@ export default function TaskList({ navigation }: TaskListScreenProps) {
           </Pressable>
         </View>
         <View style={styles.body}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {STATUS_OPTIONS.map(([key, label]) => (
+              <TouchableOpacity
+                key={key}
+                style={[
+                  styles.statusOption,
+                  status === key && statusStyleMap[key],
+                ]}
+                onPress={() => {
+                  setStatus(key);
+                  fetchTasksByStatus(key);
+                }}
+              >
+                <Text
+                  style={
+                    status === key
+                      ? styles.statusTextSelected
+                      : styles.statusText
+                  }
+                >
+                  {label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
           {tasks.map(task => (
             <Pressable
               key={task.id}
@@ -186,6 +232,9 @@ const styles = StyleSheet.create({
   completed: {
     backgroundColor: '#fe7460',
   },
+  all: {
+    backgroundColor: '#ccc',
+  },
   taskItemStatus: {
     fontSize: 14,
     color: '#343434',
@@ -202,5 +251,23 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.5,
+  },
+  statusOption: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginRight: 8,
+    marginBottom: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  statusText: {
+    color: '#343434',
+    fontWeight: '500',
+  },
+  statusTextSelected: {
+    color: '#fff',
+    fontWeight: '700',
   },
 });
