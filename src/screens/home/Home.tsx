@@ -12,7 +12,7 @@ import { getBlogById } from '../../api/blog';
 import { useCallback, useState } from 'react';
 import { Blog } from '../../types/blog';
 import BellIcon from '../../../assets/svgs/bell.svg';
-import MailIcon from '../../../assets/svgs/mail.svg';
+import CameraIcon from '../../../assets/svgs/camera.svg';
 import SettingIcon from '../../../assets/svgs/setting.svg';
 import HomeIcon from '../../../assets/svgs/home.svg';
 import ArrowRightIcon from '../../../assets/svgs/arrow-right.svg';
@@ -171,7 +171,9 @@ export default function Home({ navigation }: HomeScreenProps) {
           <HomeIcon width={20} height={20} />
           <Text style={styles.homeScreenIconText}>Home</Text>
         </View>
-        <MailIcon width={28} height={28} />
+        <Pressable onPress={() => navigation.navigate('Camera')}>
+          <CameraIcon width={28} height={28} />
+        </Pressable>
         <Pressable onPress={() => navigation.navigate('Setting')}>
           <SettingIcon width={28} height={28} />
         </Pressable>

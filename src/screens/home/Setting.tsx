@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../stores/auth';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
+import { signOut } from '../../services/auth';
 import ArrowLeftIcon from '../../../assets/svgs/arrow-left.svg';
-import MailIcon from '../../../assets/svgs/mail.svg';
+import CameraIcon from '../../../assets/svgs/camera.svg';
 import SettingIcon from '../../../assets/svgs/setting_white.svg';
 import HomeIcon from '../../../assets/svgs/home.svg';
 
@@ -14,6 +15,11 @@ type SettingScreenProps = NativeStackScreenProps<AppStackParamList, 'Setting'>;
 export default function Setting({ navigation }: SettingScreenProps) {
   const dispatch = useDispatch();
   const username = useSelector((state: RootState) => state.auth.username);
+
+  const handleLogout = () => {
+    signOut();
+    dispatch(logout());
+  };
 
   return (
     <View style={styles.container}>
@@ -36,7 +42,7 @@ export default function Setting({ navigation }: SettingScreenProps) {
           <Text style={styles.settingItem}>General</Text>
           <Text style={styles.settingItem}>App Information</Text>
           <Text style={styles.settingItem}>Languages</Text>
-          <Pressable onPress={() => dispatch(logout())}>
+          <Pressable onPress={handleLogout}>
             <Text style={styles.settingItem}>Logout</Text>
           </Pressable>
         </View>
@@ -45,7 +51,9 @@ export default function Setting({ navigation }: SettingScreenProps) {
         <Pressable onPress={() => navigation.navigate('Home')}>
           <HomeIcon width={28} height={28} stroke="#898989" />
         </Pressable>
-        <MailIcon width={28} height={28} />
+        <Pressable onPress={() => navigation.navigate('Camera')}>
+          <CameraIcon width={28} height={28} />
+        </Pressable>
         <View style={styles.settingScreenIcon}>
           <SettingIcon width={20} height={20} fill="#FFFFFF" />
           <Text style={styles.settingScreenIconText}>Setting</Text>
