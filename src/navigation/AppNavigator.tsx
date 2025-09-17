@@ -13,6 +13,7 @@ import CreateTask from '../screens/task/CreateTask';
 import DetailTask from '../screens/task/DetailTask';
 import EditTask from '../screens/task/EditTask';
 import CameraScreen from '../screens/camera/CameraScreen';
+import RecordScreen from '../screens/camera/RecordScreen';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -29,6 +30,7 @@ export type AppStackParamList = {
   DetailTask: { id: string };
   EditTask: { id: string };
   Camera: undefined;
+  Record: undefined;
 };
 
 const Auth = createNativeStackNavigator<AuthStackParamList>();
@@ -97,6 +99,11 @@ const AppStack = () => {
       <App.Screen
         name="Camera"
         component={CameraScreen}
+        options={{ headerShown: false }}
+      />
+      <App.Screen
+        name="Record"
+        component={RecordScreen}
         options={{ headerShown: false }}
       />
     </App.Navigator>

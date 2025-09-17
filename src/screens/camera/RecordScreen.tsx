@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  Pressable,
   Modal,
+  Pressable,
+  Image,
 } from 'react-native';
 import {
   Camera,
@@ -14,13 +14,14 @@ import {
   useCameraPermission,
 } from 'react-native-vision-camera';
 import CloseIcon from '../../../assets/svgs/close.svg';
-import RecordIcon from '../../../assets/svgs/record.svg';
+import CameraIcon from '../../../assets/svgs/camera.svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
+import Video from 'react-native-video';
 
-type CameraScreenProps = NativeStackScreenProps<AppStackParamList, 'Camera'>;
+type RecordScreenProps = NativeStackScreenProps<AppStackParamList, 'Record'>;
 
-export default function CameraScreen({ navigation }: CameraScreenProps) {
+export default function RecordScreen({ navigation }: RecordScreenProps) {
   const camera = useRef<Camera>(null);
   const device = useCameraDevice('back', {
     physicalDevices: [
@@ -30,14 +31,14 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     ],
   });
   const { hasPermission, requestPermission } = useCameraPermission();
-  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [lastVideo, setLastVideo] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
 
   useEffect(() => {
-    if (!hasPermission) {
-      requestPermission();
-    }
-  }, [hasPermission, requestPermission]);
+    if (!hasPermission) requestPermission();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasPermission]);
 
   if (!hasPermission) {
     return (
@@ -55,13 +56,26 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
     );
   }
 
-  const takePhoto = async () => {
+  const startVideo = () => {
+    if (camera.current == null) return;
+    setRecording(true);
+
+    camera.current.startRecording({
+      flash: 'off',
+      onRecordingFinished: video => {
+        setLastVideo('file://' + video.path);
+        setRecording(false);
+      },
+      onRecordingError: () => {
+        setRecording(false);
+      },
+    });
+  };
+
+  const stopVideo = async () => {
     if (camera.current == null) return;
     try {
-      const photo = await camera.current.takePhoto({
-        flash: 'off',
-      });
-      setLastPhoto('file://' + photo.path);
+      await camera.current.stopRecording();
     } catch (e) {}
   };
 
@@ -80,52 +94,61 @@ export default function CameraScreen({ navigation }: CameraScreenProps) {
         isActive={true}
         photo={true}
         video={true}
-        audio={true}
       />
 
       <View style={styles.controls}>
-        <TouchableOpacity onPress={takePhoto} style={styles.button}>
-          <View style={styles.captureButton} />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Record')}
-          style={styles.recordButton}
-        >
-          <RecordIcon width={28} height={28} />
-        </TouchableOpacity>
-
-        {/* Thumbnail preview */}
-        {lastPhoto && (
-          <Pressable
-            style={styles.previewContainer}
-            onPress={() => setPreviewVisible(true)}
-          >
-            <Image
-              source={{ uri: lastPhoto }}
-              style={styles.previewImage}
-              resizeMode="cover"
-            />
-          </Pressable>
+        {!recording ? (
+          <TouchableOpacity onPress={startVideo} style={styles.button}>
+            <View style={styles.startButton} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={stopVideo} style={styles.buttonStop}>
+            <View style={styles.stopButton} />
+          </TouchableOpacity>
         )}
 
-        {/* Fullscreen modal preview */}
-        <Modal visible={previewVisible} transparent={true}>
-          <View style={styles.modalContainer}>
-            <Image
-              source={{ uri: lastPhoto ?? undefined }}
-              style={styles.fullImage}
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Camera')}
+          style={styles.cameraButton}
+        >
+          <CameraIcon width={28} height={28} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Thumbnail preview */}
+      {lastVideo && (
+        <Pressable
+          style={styles.previewContainer}
+          onPress={() => setPreviewVisible(true)}
+        >
+          <Image
+            source={{
+              uri: 'https://img.icons8.com/ios-filled/100/ffffff/video.png',
+            }}
+            style={styles.previewImage}
+          />
+        </Pressable>
+      )}
+
+      {/* Fullscreen modal preview */}
+      <Modal visible={previewVisible} transparent={true}>
+        <View style={styles.modalContainer}>
+          {lastVideo && (
+            <Video
+              source={{ uri: lastVideo }}
+              style={styles.fullVideo}
+              controls={true} // có thanh play/pause
               resizeMode="contain"
             />
-            <Pressable
-              style={styles.closeButton}
-              onPress={() => setPreviewVisible(false)}
-            >
-              <CloseIcon width={24} height={24} />
-            </Pressable>
-          </View>
-        </Modal>
-      </View>
+          )}
+          <Pressable
+            style={styles.closeButton}
+            onPress={() => setPreviewVisible(false)}
+          >
+            <CloseIcon width={24} height={24} />
+          </Pressable>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -154,13 +177,25 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 50,
   },
-  captureButton: {
-    backgroundColor: '#FFFFFF',
+  buttonStop: {
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    padding: 15,
+    borderRadius: 50,
+  },
+  startButton: {
+    backgroundColor: 'red',
     width: 60,
     height: 60,
     borderRadius: 30,
   },
-  recordButton: {
+  stopButton: {
+    backgroundColor: 'red',
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+  },
+  cameraButton: {
     padding: 10,
     position: 'absolute',
     right: '20%',
@@ -173,13 +208,13 @@ const styles = StyleSheet.create({
   },
   previewContainer: {
     position: 'absolute',
-    top: -20,
-    left: 30,
+    bottom: 45,
+    left: 40,
     alignItems: 'center',
   },
   previewImage: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     borderRadius: 10,
     marginTop: 8,
   },
@@ -189,9 +224,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fullImage: {
+  fullVideo: {
     width: '100%',
-    height: '80%',
+    height: '70%',
   },
   closeButton: {
     marginTop: 20,
