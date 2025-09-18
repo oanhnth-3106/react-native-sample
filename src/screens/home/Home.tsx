@@ -8,16 +8,15 @@ import {
   View,
 } from 'react-native';
 import { AppStackParamList } from '../../navigation/AppNavigator';
-import { getBlogById } from '../../api/blog';
 import { useCallback, useState } from 'react';
 import { Blog } from '../../types/blog';
-import BellIcon from '../../../assets/svgs/bell.svg';
 import CameraIcon from '../../../assets/svgs/camera.svg';
 import SettingIcon from '../../../assets/svgs/setting.svg';
 import HomeIcon from '../../../assets/svgs/home.svg';
 import ArrowRightIcon from '../../../assets/svgs/arrow-right.svg';
 import { countAllStatuses } from '../../services/task';
 import { useFocusEffect } from '@react-navigation/native';
+import { getAnyBlog } from '../../services/blog';
 
 type HomeScreenProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
@@ -27,8 +26,8 @@ export default function Home({ navigation }: HomeScreenProps) {
 
   const fetchBlogDetail = async () => {
     try {
-      const data = await getBlogById('1');
-      setDetail(data || null);
+      const data = await getAnyBlog();
+      setDetail(data as Blog);
     } catch (error) {}
   };
 
@@ -83,7 +82,6 @@ export default function Home({ navigation }: HomeScreenProps) {
           />
           <Text style={styles.headerLeftText}>Welcome!</Text>
         </View>
-        <BellIcon width={24} height={24} style={styles.headerIcon} />
       </View>
       <View style={styles.body}>
         <View>
@@ -202,9 +200,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '600',
-  },
-  headerIcon: {
-    alignSelf: 'center',
   },
   avatar: {
     width: 56,

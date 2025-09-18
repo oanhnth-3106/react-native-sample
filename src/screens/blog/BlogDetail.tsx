@@ -10,7 +10,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
 import { useEffect, useState } from 'react';
 import { Blog } from '../../types/blog';
-import { getBlogById } from '../../api/blog';
+import { getBlogDetail } from '../../services/blog';
 import PathIcon from '../../../assets/svgs/path.svg';
 
 type BlogDetailScreenProps = NativeStackScreenProps<
@@ -27,7 +27,7 @@ export default function BlogDetail({
 
   const fetchBlogDetail = async () => {
     try {
-      const data = await getBlogById(id);
+      const data = await getBlogDetail(id);
       setDetail(data || null);
     } catch (error) {
       console.error('Error fetching blog detail:', error);

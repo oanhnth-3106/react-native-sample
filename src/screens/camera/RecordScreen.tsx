@@ -137,7 +137,7 @@ export default function RecordScreen({ navigation }: RecordScreenProps) {
             <Video
               source={{ uri: lastVideo }}
               style={styles.fullVideo}
-              controls={true} // có thanh play/pause
+              controls={true}
               resizeMode="contain"
             />
           )}

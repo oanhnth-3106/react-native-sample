@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Platform, PermissionsAndroid } from 'react-native';
-import notifee, { AndroidImportance } from '@notifee/react-native';
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import messaging from '@react-native-firebase/messaging';
 
 async function requestUserPermission() {
@@ -15,6 +15,8 @@ async function requestUserPermission() {
 
 export function useFirebaseNotifications() {
   useEffect(() => {
+    let foregroundUnsubscribe: (() => void) | undefined;
+
     async function init() {
       await requestUserPermission();
 
@@ -25,29 +27,48 @@ export function useFirebaseNotifications() {
         importance: AndroidImportance.HIGH,
       });
 
-      console.log('Channel created:', channelId);
-
       // Get FCM token
       const token = await messaging().getToken();
       console.log('FCM Token:', token);
 
-      // Listen for foreground messages
-      const unsubscribe = messaging().onMessage(async remoteMessage => {
+      await messaging().subscribeToTopic('tasks');
+
+      // Foreground notifications
+      foregroundUnsubscribe = messaging().onMessage(async remoteMessage => {
         await notifee.displayNotification({
           title: remoteMessage.notification?.title ?? 'Thông báo',
           body: remoteMessage.notification?.body ?? 'Bạn có thông báo mới',
           android: {
             channelId,
-            pressAction: {
-              id: 'default',
-            },
+            pressAction: { id: 'default' },
           },
         });
       });
 
-      return unsubscribe;
+      // Background / Killed notifications
+      messaging().setBackgroundMessageHandler(async remoteMessage => {
+        await notifee.displayNotification({
+          title: remoteMessage.notification?.title ?? 'Thông báo',
+          body: remoteMessage.notification?.body ?? 'Bạn có thông báo mới',
+          android: {
+            channelId,
+            pressAction: { id: 'default' },
+          },
+        });
+      });
+
+      // Handle notification press (foreground)
+      notifee.onForegroundEvent(({ type, detail }) => {
+        if (type === EventType.PRESS) {
+          console.log('User pressed notification:', detail.notification);
+        }
+      });
     }
 
     init();
+
+    return () => {
+      if (foregroundUnsubscribe) foregroundUnsubscribe();
+    };
   }, []);
 }

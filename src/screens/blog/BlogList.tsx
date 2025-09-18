@@ -10,8 +10,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../../navigation/AppNavigator';
 import { useEffect, useState } from 'react';
 import { Blog } from '../../types/blog';
-import { getListBlogs } from '../../api/blog';
 import PathIcon from '../../../assets/svgs/path.svg';
+import { getListBlog } from '../../services/blog';
 
 type BlogListScreenProps = NativeStackScreenProps<
   AppStackParamList,
@@ -23,8 +23,8 @@ export default function BlogList({ navigation }: BlogListScreenProps) {
 
   const fetchBlogs = async () => {
     try {
-      const data = await getListBlogs();
-      setBlogs(data);
+      const data = await getListBlog();
+      setBlogs(data as Blog[]);
     } catch (error) {
       console.error('Error fetching blogs:', error);
     }

@@ -7,6 +7,7 @@ import { signIn } from '../../services/auth';
 import { getAuthErrorMessage } from '../../utils/authErrorHandler';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../../navigation/AppNavigator';
+import CityLifeIcon from '../../../assets/svgs/city_life.svg';
 
 type LoginScreenProps = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -33,7 +34,7 @@ export default function Login({ navigation }: LoginScreenProps) {
 
   return (
     <SafeAreaProvider style={styles.container}>
-      <View>
+      <View style={styles.loginForm}>
         <Text style={styles.text}>Email</Text>
         <TextInput
           style={styles.input}
@@ -75,6 +76,7 @@ export default function Login({ navigation }: LoginScreenProps) {
           </Text>
         </Pressable>
       </View>
+      <CityLifeIcon width={'100%'} height={200} style={styles.bgIcon} />
     </SafeAreaProvider>
   );
 }
@@ -82,8 +84,11 @@ export default function Login({ navigation }: LoginScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    position: 'relative',
+  },
+  loginForm: {
     padding: 20,
+    flex: 1,
     justifyContent: 'center',
   },
   button: {
@@ -136,5 +141,13 @@ const styles = StyleSheet.create({
     color: '#0000EE',
     textDecorationLine: 'underline',
     alignSelf: 'center',
+  },
+  bgIcon: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    width: '100%',
+    height: 120,
   },
 });
